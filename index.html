@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crypto Payment Gateway</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient-start: #0f0c29;
+      --bg-gradient-mid: #302b63;
+      --bg-gradient-end: #24243e;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --primary-accent: #4a90e2;
+      --secondary-accent: #f5a623;
+      --text-light: #f0f0f0;
+      --text-dark: #1a1a2e;
+      --white: #ffffff;
+      --success: #50e3c2;
+      --error: #e94560;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(74, 144, 226, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0); }
+    }
+    body {
+      background: linear-gradient(45deg, var(--bg-gradient-start), var(--bg-gradient-mid), var(--bg-gradient-end));
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text-light);
+    }
+    .card {
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 90%;
+      max-width: 420px;
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.8s ease-out;
+    }
+    #payTitle {
+        font-size: 2em;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: var(--white);
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .crypto-icons {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    .crypto-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .crypto-icon:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.2);
+    }
+    .crypto-icon.selected {
+      border-color: var(--primary-accent);
+      transform: scale(1.15) translateY(-2px);
+      box-shadow: 0 0 15px var(--primary-accent);
+    }
+    .crypto-icon img {
+      width: 32px;
+      height: 32px;
+      transition: transform 0.3s ease;
+    }
+    .crypto-icon.selected img {
+        transform: rotate(360deg);
+    }
+    #networkWrap {
+        margin-bottom: 25px;
+    }
+    #networkSelect {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--text-light);
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: 1px solid var(--card-border);
+        font-size: 1em;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23f0f0f0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right 15px top 50%;
+        background-size: .65em auto;
+    }
+    #networkSelect:hover {
+        border-color: var(--primary-accent);
+    }
+    .qr-container {
+        margin: 25px auto;
+        background: var(--white);
+        padding: 15px;
+        border-radius: 20px;
+        width: fit-content;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    #qrcode {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .address-box {
+        margin-top: 25px;
+    }
+    .address-label {
+        font-size: 0.95em;
+        color: var(--text-light);
+        margin-bottom: 10px;
+        opacity: 0.8;
+        font-weight: 500;
+    }
+    .address {
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--white);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 1.05em;
+      word-break: break-all;
+      border: 1px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+    .payment-info {
+        background: rgba(0,0,0,0.25);
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+    }
+    .usd-amount {
+      color: var(--white);
+      font-size: 1.15em;
+      font-weight: 500;
+    }
+    .amount {
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: 1.3em;
+      color: var(--secondary-accent);
+    }
+    .timer {
+      margin-top: 30px;
+      padding: 12px 0;
+      border-radius: 12px;
+      background: rgba(74, 144, 226, 0.2);
+      color: var(--primary-accent);
+      font-weight: 700;
+      font-size: 1.3em;
+      width: 100%;
+      max-width: 220px;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid var(--primary-accent);
+      transition: all 0.3s ease;
+    }
+    .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    button {
+      width: 100%;
+      padding: 16px 0;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 1em;
+      border: none;
+      background: var(--primary-accent);
+      color: var(--white);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    button:hover {
+        background: #5fa4ff;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+    }
+    button.secondary {
+        background: rgba(255,255,255,0.2);
+    }
+    button.secondary:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    .copy-feedback {
+        visibility: hidden;
+        background-color: var(--success);
+        color: var(--text-dark);
+        text-align: center;
+        border-radius: 6px;
+        padding: 8px 0;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 30px;
+        font-size: 1em;
+        opacity: 0;
+        transition: all 0.5s;
+    }
+    .copy-feedback.show {
+        visibility: visible;
+        opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 id="payTitle">Secure Crypto Payment</h2>
+    <div class="crypto-icons">
+      <div class="crypto-icon selected" id="iconUSDT" onclick="selectCurrency('USDT')" title="Tether USDT">
+        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/825.png" alt="USDT"/>
+      </div>
+      <div class="crypto-icon" id="iconBTC" onclick="selectCurrency('BTC')" title="Bitcoin BTC">
+        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1.png" alt="BTC"/>
+      </div>
+      <div class="crypto-icon" id="iconETH" onclick="selectCurrency('ETH')" title="Ethereum ETH">
+        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png" alt="ETH"/>
+      </div>
+    </div>
+    <select id="currencySelect" onchange="updateCurrency()" style="display:none;">
+      <option value="USDT">Tether (USDT)</option>
+      <option value="BTC">Bitcoin (BTC)</option>
+      <option value="ETH">Ethereum (ETH)</option>
+    </select>
+    <div id="networkWrap" style="display:none;">
+      <select id="networkSelect" onchange="updatePaymentDetails()">
+        <option value="TRC20">TRC20 Network</option>
+        <option value="ERC20">ERC20 Network</option>
+      </select>
+    </div>
+
+    <div class="qr-container">
+        <div id="qrcode"></div>
+    </div>
+
+    <div class="address-box">
+        <div class="address-label">Payment Address</div>
+        <div class="address" id="walletAddress"></div>
+    </div>
+    <div class="button-group">
+        <button onclick="copyAddress()">Copy Address</button>
+        <button onclick="downloadQR()" class="secondary">Download QR</button>
+    </div>
+    <div class="payment-info">
+        <div class="usd-amount">Total Amount: <span id="usdAmount">30</span> USD</div>
+        <div class="amount" id="amountLabel"></div>
+    </div>
+    <div class="timer" id="countdown">15:00</div>
+  </div>
+  <div id="copyFeedback" class="copy-feedback">Address Copied!</div>
+
+  <script>
+    const USD_AMOUNT = 30;
+    const rates = { USDT: 1, BTC: 65000, ETH: 3500 };
+    const wallets = {
+      USDT: {
+        TRC20: { 
+            address: "TFmXMUtRG1dP59mK8hooz5ohJyBgYkbDze", 
+            contract: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+            decimals: 6
+        },
+        ERC20: { 
+            address: "0xD76974951e1F2AEAd047C4843038e38e807E757E", 
+            contract: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            decimals: 6
+        }
+      },
+      BTC: { address: "1CBxmEaz3ofcy8XtTFDZiWC7ybgKw5QZX6" },
+      ETH: { address: "0xD76974951e1F2AEAd047C4843038e38e807E757E" }
+    };
+    const qrcodeContainer = document.getElementById("qrcode");
+    let qrCodeInstance = null;
+
+    function selectCurrency(cur) {
+      document.getElementById('currencySelect').value = cur;
+      updateCurrency();
+      ['USDT','BTC','ETH'].forEach(c => {
+        document.getElementById('icon'+c).classList.toggle('selected', c === cur);
+      });
+    }
+    function updateCurrency() {
+      const selected = document.getElementById("currencySelect").value;
+      const netWrap = document.getElementById("networkWrap");
+      netWrap.style.display = selected === "USDT" ? "block" : "none";
+      updatePaymentDetails();
+    }
+    function updatePaymentDetails() {
+      const selected = document.getElementById("currencySelect").value;
+      const network = document.getElementById("networkSelect")?.value || "TRC20";
+      let data, amountStr, qrText;
+
+      if (selected === "USDT") {
+        data = wallets[selected][network];
+        const amount = USD_AMOUNT / rates.USDT;
+        amountStr = amount.toFixed(2);
+        if (network === "ERC20") {
+            const amountInSmallestUnit = BigInt(Math.round(amount * Math.pow(10, data.decimals)));
+            qrText = `ethereum:${data.contract}/transfer?address=${data.address}&uint256=${amountInSmallestUnit.toString()}`;
+        } else { // TRC20
+            qrText = `tron:${data.address}?amount=${amount.toFixed(data.decimals)}&token=${data.contract}`;
+        }
+      } else if (selected === "BTC") {
+        data = wallets[selected];
+        amountStr = (USD_AMOUNT / rates.BTC).toFixed(6);
+        qrText = data.address;
+      } else if (selected === "ETH") {
+        data = wallets[selected];
+        amountStr = (USD_AMOUNT / rates.ETH).toFixed(5);
+        qrText = data.address;
+      }
+      
+      const { address } = data;
+      
+      qrcodeContainer.innerHTML = "";
+      qrCodeInstance = new QRCode(qrcodeContainer, { 
+          text: qrText, 
+          width: 160, 
+          height: 160, 
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+      });
+
+      document.getElementById("walletAddress").innerText = address;
+      document.getElementById("amountLabel").innerText = `Pay Exactly: ${amountStr} ${selected}`;
+      const title = {
+        USDT: `Pay with USDT (${network})`,
+        BTC: "Pay with Bitcoin (BTC)",
+        ETH: "Pay with Ethereum (ETH)"
+      };
+      document.getElementById("payTitle").innerText = title[selected];
+      document.getElementById("usdAmount").innerText = USD_AMOUNT;
+    }
+    function copyAddress() {
+      const selected = document.getElementById("currencySelect").value;
+      const network = document.getElementById("networkSelect")?.value || "TRC20";
+      const addr = selected === "USDT" ? wallets[selected][network].address : wallets[selected].address;
+      navigator.clipboard.writeText(addr).then(() => {
+        const feedback = document.getElementById("copyFeedback");
+        feedback.classList.add("show");
+        setTimeout(() => { feedback.classList.remove("show"); }, 2000);
+      });
+    }
+    function downloadQR() {
+      const canvas = qrcodeContainer.querySelector("canvas");
+      if (!canvas) return;
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = "crypto-payment-qr.png";
+      link.click();
+    }
+    let timeLeft = 15 * 60;
+    const countdownEl = document.getElementById("countdown");
+    const intervalId = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(intervalId);
+        countdownEl.innerText = "Expired";
+        countdownEl.style.backgroundColor = "rgba(233, 69, 96, 0.2)";
+        countdownEl.style.borderColor = "var(--error)";
+        countdownEl.style.color = "var(--error)";
+        return;
+      }
+      timeLeft--;
+      const min = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+      const sec = String(timeLeft % 60).padStart(2, "0");
+      countdownEl.innerText = `${min}:${sec}`;
+      if (timeLeft < 60) {
+          countdownEl.style.animation = 'pulse 1s infinite';
+      }
+    }, 1000);
+    window.onload = () => {
+      selectCurrency('USDT');
+    };
+  </script>
+</body>
+</html>
