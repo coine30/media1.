@@ -1,36 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Crypto Payment Gateway</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-gradient-start: #0f0c29;
       --bg-gradient-mid: #302b63;
       --bg-gradient-end: #24243e;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --card-border: rgba(255, 255, 255, 0.15);
+      --card-bg: rgba(255,255,255,0.08);
       --primary-accent: #4a90e2;
       --secondary-accent: #f5a623;
       --text-light: #f0f0f0;
-      --text-dark: #1a1a2e;
-      --white: #ffffff;
-      --success: #50e3c2;
+      --white: #fff;
       --error: #e94560;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.7); }
-      70% { box-shadow: 0 0 0 10px rgba(74, 144, 226, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0); }
     }
     body {
       background: linear-gradient(45deg, var(--bg-gradient-start), var(--bg-gradient-mid), var(--bg-gradient-end));
@@ -41,209 +27,275 @@
       min-height: 100vh;
       margin: 0;
       color: var(--text-light);
+      direction: ltr;
     }
     .card {
       background: var(--card-bg);
-      padding: 40px;
-      border-radius: 25px;
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+      padding: 36px 25px 28px;
+      border-radius: 22px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.30);
       text-align: center;
-      width: 90%;
+      width: 95%;
       max-width: 420px;
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255,255,255,0.13);
       backdrop-filter: blur(10px);
-      animation: fadeIn 0.8s ease-out;
+      animation: fadeIn 0.8s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
     }
     #payTitle {
-        font-size: 2em;
-        font-weight: 700;
-        margin-bottom: 25px;
-        color: var(--white);
-        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--white);
+      letter-spacing: 1px;
+      text-shadow: 0 1px 10px rgba(0,0,0,0.15);
     }
     .crypto-icons {
       display: flex;
       justify-content: center;
-      gap: 25px;
-      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
     }
     .crypto-icon {
-      width: 50px;
-      height: 50px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.12);
+      border: 2.5px solid transparent;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid transparent;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .crypto-icon:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.2);
+      transition: all 0.22s;
+      position: relative;
     }
     .crypto-icon.selected {
       border-color: var(--primary-accent);
-      transform: scale(1.15) translateY(-2px);
-      box-shadow: 0 0 15px var(--primary-accent);
+      transform: scale(1.11) translateY(-2px);
+      box-shadow: 0 0 12px var(--primary-accent);
+      z-index: 2;
     }
-    .crypto-icon img {
-      width: 32px;
-      height: 32px;
-      transition: transform 0.3s ease;
-    }
-    .crypto-icon.selected img {
-        transform: rotate(360deg);
+    .crypto-icon img { width: 28px; height: 28px;}
+    .network-label {
+      font-size: 1.01em;
+      color: var(--primary-accent);
+      margin-bottom: 7px;
+      text-align: left;
+      font-weight: bold;
     }
     #networkWrap {
-        margin-bottom: 25px;
+      margin-bottom: 19px;
     }
-    #networkSelect {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background: rgba(0, 0, 0, 0.2);
-        color: var(--text-light);
-        padding: 12px 20px;
-        border-radius: 12px;
-        border: 1px solid var(--card-border);
-        font-size: 1em;
-        width: 100%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23f0f0f0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-        background-repeat: no-repeat;
-        background-position: right 15px top 50%;
-        background-size: .65em auto;
+    #networkSelect, .single-network {
+      background: rgba(0,0,0,0.15);
+      color: var(--text-light);
+      padding: 9px 15px;
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,0.13);
+      font-size: 1em;
+      width: 100%;
+      cursor: pointer;
+      margin-bottom: 2px;
+      text-align: left;
     }
-    #networkSelect:hover {
-        border-color: var(--primary-accent);
+    .single-network {
+      border: none;
+      background: none;
+      color: var(--secondary-accent);
+      font-weight: bold;
     }
     .qr-container {
-        margin: 25px auto;
-        background: var(--white);
-        padding: 15px;
-        border-radius: 20px;
-        width: fit-content;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      margin: 20px auto 12px;
+      background: var(--white);
+      padding: 10px;
+      border-radius: 20px;
+      width: fit-content;
+      box-shadow: 0 5px 14px rgba(0,0,0,0.14);
+      position: relative;
     }
     #qrcode {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      background: white;
+      padding: 8px;
+      border-radius: 10px;
+    }
+    .qr-info {
+      margin-top: 6px;
+      font-size: 0.94em;
+      color: #4a90e2;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
     .address-box {
-        margin-top: 25px;
+      margin-top: 13px;
     }
     .address-label {
-        font-size: 0.95em;
-        color: var(--text-light);
-        margin-bottom: 10px;
-        opacity: 0.8;
-        font-weight: 500;
+      font-size: 0.99em;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      opacity: 0.85;
+      font-weight: 500;
+      text-align: left;
     }
     .address {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0,0,0,0.21);
       color: var(--white);
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      font-size: 1.05em;
+      padding: 11px 7px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 1.06em;
       word-break: break-all;
-      border: 1px solid transparent;
-      transition: border-color 0.3s ease;
+      border: 1px solid var(--primary-accent);
+      transition: border-color 0.3s;
+      text-align: left;
+      letter-spacing: 1px;
+      font-family: 'Poppins', monospace;
+      font-weight: 600;
     }
     .payment-info {
-        background: rgba(0,0,0,0.25);
-        padding: 20px;
-        border-radius: 15px;
-        margin-top: 20px;
+      background: rgba(0,0,0,0.16);
+      padding: 12px 7px;
+      border-radius: 11px;
+      margin-top: 10px;
+      font-size: 1.01em;
     }
     .usd-amount {
       color: var(--white);
-      font-size: 1.15em;
+      font-size: 1.07em;
       font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .live-rate {
+      color: var(--primary-accent);
+      font-size: 0.92em;
+      margin-bottom: 3px;
+      font-weight: bold;
+      letter-spacing: .5px;
     }
     .amount {
-      margin-top: 10px;
+      margin-top: 5px;
       font-weight: 700;
-      font-size: 1.3em;
+      font-size: 1.19em;
       color: var(--secondary-accent);
     }
     .timer {
-      margin-top: 30px;
+      margin-top: 17px;
       padding: 12px 0;
-      border-radius: 12px;
-      background: rgba(74, 144, 226, 0.2);
+      border-radius: 11px;
+      background: rgba(74, 144, 226, 0.17);
       color: var(--primary-accent);
       font-weight: 700;
-      font-size: 1.3em;
+      font-size: 1.13em;
       width: 100%;
-      max-width: 220px;
+      max-width: 210px;
       margin-left: auto;
       margin-right: auto;
-      border: 1px solid var(--primary-accent);
-      transition: all 0.3s ease;
+      border: 1.1px solid var(--primary-accent);
+      transition: all 0.3s;
+      letter-spacing: 2px;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(233,69,96,0.5);}
+      70% { box-shadow: 0 0 0 10px rgba(233,69,96,0);}
+      100% {box-shadow: 0 0 0 0 rgba(233,69,96,0);}
+    }
+    .timer.expired {
+      background: rgba(233,69,96,0.17);
+      border-color: var(--error);
+      color: var(--error);
+      animation: pulse 1s infinite;
     }
     .button-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-direction: row;
     }
     button {
-      width: 100%;
-      padding: 16px 0;
-      border-radius: 15px;
-      font-weight: 600;
+      flex: 1;
+      padding: 12px 0;
+      border-radius: 10px;
+      font-weight: 700;
       font-size: 1em;
       border: none;
       background: var(--primary-accent);
       color: var(--white);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-    button:hover {
-        background: #5fa4ff;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
-    }
     button.secondary {
-        background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.21);
+      color: var(--primary-accent);
+      border: 1px solid var(--primary-accent);
     }
-    button.secondary:hover {
-        background: rgba(255,255,255,0.3);
+    button:hover, button.secondary:hover {
+      background: #5fa4ff;
+      color: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(74,144,226,0.15);
     }
     .copy-feedback {
-        visibility: hidden;
-        background-color: var(--success);
-        color: var(--text-dark);
-        text-align: center;
-        border-radius: 6px;
-        padding: 8px 0;
-        position: fixed;
-        z-index: 1;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 30px;
-        font-size: 1em;
-        opacity: 0;
-        transition: all 0.5s;
+      visibility: hidden;
+      background-color: #50e3c2;
+      color: #111;
+      text-align: center;
+      border-radius: 7px;
+      padding: 9px 20px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 28px;
+      font-size: 1.05em;
+      opacity: 0;
+      transition: all 0.4s;
+      box-shadow: 0 2px 12px rgba(80,227,194,0.09);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .copy-feedback.show {
-        visibility: visible;
-        opacity: 1;
+      visibility: visible;
+      opacity: 1;
+    }
+    .copy-feedback svg {
+      width: 19px; height: 19px;
+      color: #18c683;
+    }
+    .warning-note {
+      background: rgba(233, 69, 96, 0.14);
+      border-left: 4px solid var(--error);
+      padding: 8px;
+      margin: 10px 0 7px;
+      border-radius: 0 7px 7px 0;
+      text-align: left;
+      font-size: 0.93em;
+      color: var(--error);
+    }
+    @media (max-width: 520px) {
+      .card {padding: 9px 3vw;}
+      #payTitle {font-size: 1.2em;}
+      .crypto-icons {gap: 6px;}
+      .qr-container {padding: 5px;}
+      .address {font-size: .98em;}
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2 id="payTitle">Secure Crypto Payment</h2>
-    <div class="crypto-icons">
-      <div class="crypto-icon selected" id="iconUSDT" onclick="selectCurrency('USDT')" title="Tether USDT">
+    <h2 id="payTitle">Deposit TRX</h2>
+    <div class="crypto-icons" aria-label="Select Currency">
+      <div class="crypto-icon" id="iconUSDT" onclick="selectCurrency('USDT')" title="Tether USDT">
         <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/825.png" alt="USDT"/>
       </div>
       <div class="crypto-icon" id="iconBTC" onclick="selectCurrency('BTC')" title="Bitcoin BTC">
@@ -252,160 +304,288 @@
       <div class="crypto-icon" id="iconETH" onclick="selectCurrency('ETH')" title="Ethereum ETH">
         <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png" alt="ETH"/>
       </div>
+      <div class="crypto-icon" id="iconUSDC" onclick="selectCurrency('USDC')" title="USD Coin USDC">
+        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png" alt="USDC"/>
+      </div>
+      <div class="crypto-icon" id="iconSOL" onclick="selectCurrency('SOL')" title="Solana SOL">
+        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/5426.png" alt="SOL"/>
+      </div>
+      <div class="crypto-icon selected" id="iconTRX" onclick="selectCurrency('TRX')" title="Tron TRX">
+        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png" alt="TRX"/>
+      </div>
     </div>
     <select id="currencySelect" onchange="updateCurrency()" style="display:none;">
       <option value="USDT">Tether (USDT)</option>
       <option value="BTC">Bitcoin (BTC)</option>
       <option value="ETH">Ethereum (ETH)</option>
+      <option value="USDC">USD Coin (USDC)</option>
+      <option value="SOL">Solana (SOL)</option>
+      <option value="TRX">Tron (TRX)</option>
     </select>
-    <div id="networkWrap" style="display:none;">
-      <select id="networkSelect" onchange="updatePaymentDetails()">
-        <option value="TRC20">TRC20 Network</option>
-        <option value="ERC20">ERC20 Network</option>
-      </select>
-    </div>
-
+    <div id="networkWrap"></div>
     <div class="qr-container">
-        <div id="qrcode"></div>
+      <div id="qrcode"></div>
+      <div class="qr-info" id="qrInfo"></div>
     </div>
-
     <div class="address-box">
-        <div class="address-label">Payment Address</div>
-        <div class="address" id="walletAddress"></div>
+      <div class="address-label">Payment Address</div>
+      <div class="address" id="walletAddress" title="Copy Address">TFmXMURG1dP59mk8hooz5ohJyBgYkbDze</div>
     </div>
     <div class="button-group">
-        <button onclick="copyAddress()">Copy Address</button>
-        <button onclick="downloadQR()" class="secondary">Download QR</button>
+      <button onclick="copyAddress()">Copy Address</button>
+      <button onclick="downloadQR()" class="secondary">Download QR</button>
     </div>
     <div class="payment-info">
-        <div class="usd-amount">Total Amount: <span id="usdAmount">30</span> USD</div>
-        <div class="amount" id="amountLabel"></div>
+      <div class="usd-amount">Minimum deposit: <span id="usdAmount">30.00</span> <span id="currencyLabel">TRX</span></div>
+      <div class="live-rate" id="liveRate"></div>
+      <div class="amount" id="amountLabel"></div>
+    </div>
+    <div class="warning-note" id="warningNote">
+      This address supports TRX deposits on Tron network only. Any other asset will be lost!
     </div>
     <div class="timer" id="countdown">15:00</div>
   </div>
-  <div id="copyFeedback" class="copy-feedback">Address Copied!</div>
-
+  <div id="copyFeedback" class="copy-feedback">
+    <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#18c683"/><path stroke="#fff" stroke-width="2" d="M7 13l3 3 7-7"/></svg>
+    Address copied!
+  </div>
   <script>
-    const USD_AMOUNT = 30;
-    const rates = { USDT: 1, BTC: 65000, ETH: 3500 };
+    // Currencies/networks data
+    const USD_AMOUNT = 30.00;
+    const rates = { 
+      USDT: 1, 
+      BTC: 65000, 
+      ETH: 3500,
+      USDC: 1,
+      SOL: 150,
+      TRX: 0.12
+    };
     const wallets = {
       USDT: {
         TRC20: { 
             address: "TFmXMUtRG1dP59mK8hooz5ohJyBgYkbDze", 
-            contract: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-            decimals: 6
+            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png"
         },
         ERC20: { 
             address: "0xD76974951e1F2AEAd047C4843038e38e807E757E", 
-            contract: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-            decimals: 6
+            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png"
         }
       },
-      BTC: { address: "1CBxmEaz3ofcy8XtTFDZiWC7ybgKw5QZX6" },
-      ETH: { address: "0xD76974951e1F2AEAd047C4843038e38e807E757E" }
+      BTC: { 
+        address: "1CBxmEaz3ofcy8XtTFDZiWC7ybgKw5QZX6",
+        logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1.png" 
+      },
+      ETH: { 
+        address: "0xD76974951e1F2AEAd047C4843038e38e807E757E",
+        logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png" 
+      },
+      USDC: {
+        Solana: {
+            address: "DGLmijgibTZDA4Vpqv6CNYn7UFPiUfkn92GRnnBZsjMD",
+            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+        }
+      },
+      SOL: {
+        Solana: {
+            address: "DGLmijgibTZDA4Vpqv6CNYn7UFPiUfkn92GRnnBZsjMD",
+            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/5426.png"
+        }
+      },
+      TRX: {
+        Tron: {
+            address: "TFmXMURG1dP59mk8hooz5ohJyBgYkbDze",
+            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png"
+        }
+      }
     };
+
     const qrcodeContainer = document.getElementById("qrcode");
+    const qrInfo = document.getElementById("qrInfo");
     let qrCodeInstance = null;
 
     function selectCurrency(cur) {
       document.getElementById('currencySelect').value = cur;
       updateCurrency();
-      ['USDT','BTC','ETH'].forEach(c => {
+      ['USDT','BTC','ETH','USDC','SOL','TRX'].forEach(c => {
         document.getElementById('icon'+c).classList.toggle('selected', c === cur);
       });
     }
+
+    // Show network smartly (dropdown or just text)
     function updateCurrency() {
       const selected = document.getElementById("currencySelect").value;
       const netWrap = document.getElementById("networkWrap");
-      netWrap.style.display = selected === "USDT" ? "block" : "none";
+      let networks = [];
+      if (selected === "USDT") networks = ["TRC20", "ERC20"];
+      else if (selected === "USDC" || selected === "SOL") networks = ["Solana"];
+      else if (selected === "TRX") networks = ["Tron"];
+      else networks = [];
+      if (networks.length > 1) {
+        netWrap.innerHTML = `<div class="network-label">Select Network:</div>
+          <select id="networkSelect" onchange="updatePaymentDetails()"></select>`;
+        const networkSelect = document.getElementById("networkSelect");
+        networks.forEach(n => addOption(networkSelect, n, n + " Network"));
+      } else if (networks.length === 1) {
+        netWrap.innerHTML = `<div class="network-label">Network:</div>
+          <div class="single-network" id="networkSelect" data-value="${networks[0]}">${networks[0]} Network</div>`;
+      } else {
+        netWrap.innerHTML = '';
+      }
       updatePaymentDetails();
     }
+
+    function addOption(selectElement, value, text) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = text;
+      selectElement.appendChild(option);
+    }
+
+    function getSelectedNetwork() {
+      const selected = document.getElementById("currencySelect").value;
+      const netWrap = document.getElementById("networkWrap");
+      if (selected === "USDT" || selected === "USDC" || selected === "SOL" || selected === "TRX") {
+        const sel = document.getElementById("networkSelect");
+        if (sel && sel.tagName === "SELECT") return sel.value;
+        if (sel && sel.dataset && sel.dataset.value) return sel.dataset.value;
+      }
+      return "Tron";
+    }
+
     function updatePaymentDetails() {
       const selected = document.getElementById("currencySelect").value;
-      const network = document.getElementById("networkSelect")?.value || "TRC20";
-      let data, amountStr, qrText;
-
+      const network = getSelectedNetwork();
+      let data, amountStr, liveRate;
+      let addr = "";
+      let logo = "";
+      let warnText = "";
+      let liveColor = "#4a90e2";
       if (selected === "USDT") {
         data = wallets[selected][network];
-        const amount = USD_AMOUNT / rates.USDT;
-        amountStr = amount.toFixed(2);
-        if (network === "ERC20") {
-            const amountInSmallestUnit = BigInt(Math.round(amount * Math.pow(10, data.decimals)));
-            qrText = `ethereum:${data.contract}/transfer?address=${data.address}&uint256=${amountInSmallestUnit.toString()}`;
-        } else { // TRC20
-            qrText = `tron:${data.address}?amount=${amount.toFixed(data.decimals)}&token=${data.contract}`;
-        }
+        amountStr = (USD_AMOUNT / rates.USDT).toFixed(2);
+        liveRate = `1 USDT = $${rates.USDT.toFixed(2)} (${network})`;
+        addr = data.address;
+        logo = data.logo;
+        warnText = `This address accepts USDT (${network}) only!`;
       } else if (selected === "BTC") {
         data = wallets[selected];
         amountStr = (USD_AMOUNT / rates.BTC).toFixed(6);
-        qrText = data.address;
+        liveRate = `1 BTC = $${rates.BTC.toLocaleString()}`;
+        addr = data.address;
+        logo = data.logo;
+        warnText = "This address accepts Bitcoin (BTC) only.";
+        liveColor = "#f7931a";
       } else if (selected === "ETH") {
         data = wallets[selected];
         amountStr = (USD_AMOUNT / rates.ETH).toFixed(5);
-        qrText = data.address;
+        liveRate = `1 ETH = $${rates.ETH.toLocaleString()}`;
+        addr = data.address;
+        logo = data.logo;
+        warnText = "This address accepts ETH (ERC20) only.";
+        liveColor = "#627eea";
+      } else if (selected === "USDC") {
+        data = wallets[selected][network];
+        amountStr = (USD_AMOUNT / rates.USDC).toFixed(2);
+        liveRate = `1 USDC = $${rates.USDC.toFixed(2)} (${network})`;
+        addr = data.address;
+        logo = data.logo;
+        warnText = "This address accepts USDC (Solana) only!";
+        liveColor = "#2775ca";
+      } else if (selected === "SOL") {
+        data = wallets[selected][network];
+        amountStr = (USD_AMOUNT / rates.SOL).toFixed(4);
+        liveRate = `1 SOL = $${rates.SOL}`;
+        addr = data.address;
+        logo = data.logo;
+        warnText = "This address accepts SOL (Solana) only!";
+        liveColor = "#00ffa3";
+      } else if (selected === "TRX") {
+        data = wallets[selected][network];
+        amountStr = (USD_AMOUNT / rates.TRX).toFixed(2);
+        liveRate = `1 TRX = $${rates.TRX}`;
+        addr = data.address;
+        logo = data.logo;
+        warnText = "This address supports TRX deposits on Tron network only. Any other asset will be lost!";
+        liveColor = "#ec0928";
       }
-      
-      const { address } = data;
-      
+      // QR is address only — most compatible with wallet apps
       qrcodeContainer.innerHTML = "";
       qrCodeInstance = new QRCode(qrcodeContainer, { 
-          text: qrText, 
-          width: 160, 
-          height: 160, 
+          text: addr, 
+          width: 180, 
+          height: 180, 
           colorDark : "#000000",
           colorLight : "#ffffff",
           correctLevel : QRCode.CorrectLevel.H
       });
-
-      document.getElementById("walletAddress").innerText = address;
-      document.getElementById("amountLabel").innerText = `Pay Exactly: ${amountStr} ${selected}`;
-      const title = {
-        USDT: `Pay with USDT (${network})`,
-        BTC: "Pay with Bitcoin (BTC)",
-        ETH: "Pay with Ethereum (ETH)"
-      };
-      document.getElementById("payTitle").innerText = title[selected];
+      qrInfo.textContent = `${selected}${network ? " • " + network : ""}`;
+      qrInfo.style.color = liveColor;
+      document.getElementById("walletAddress").innerText = addr;
+      document.getElementById("amountLabel").innerText = `Pay exactly: ${amountStr} ${selected}`;
+      document.getElementById("payTitle").innerText = `Pay with ${selected}${network ? " (" + network + ")" : ""}`;
       document.getElementById("usdAmount").innerText = USD_AMOUNT;
+      document.getElementById("currencyLabel").innerText = selected;
+      document.getElementById("liveRate").innerText = liveRate;
+      document.getElementById("liveRate").style.color = liveColor;
+      document.getElementById("warningNote").textContent = warnText;
     }
+
     function copyAddress() {
       const selected = document.getElementById("currencySelect").value;
-      const network = document.getElementById("networkSelect")?.value || "TRC20";
-      const addr = selected === "USDT" ? wallets[selected][network].address : wallets[selected].address;
+      const network = getSelectedNetwork();
+      let addr = "";
+      if (selected === "USDT" || selected === "USDC" || selected === "SOL" || selected === "TRX") {
+        addr = wallets[selected][network].address;
+      } else {
+        addr = wallets[selected].address;
+      }
       navigator.clipboard.writeText(addr).then(() => {
         const feedback = document.getElementById("copyFeedback");
         feedback.classList.add("show");
-        setTimeout(() => { feedback.classList.remove("show"); }, 2000);
+        setTimeout(() => { feedback.classList.remove("show"); }, 1600);
       });
     }
+
     function downloadQR() {
       const canvas = qrcodeContainer.querySelector("canvas");
       if (!canvas) return;
+      const tempCanvas = document.createElement("canvas");
+      const tempCtx = tempCanvas.getContext("2d");
+      const scale = 2.2;
+      tempCanvas.width = canvas.width * scale;
+      tempCanvas.height = canvas.height * scale;
+      tempCtx.imageSmoothingEnabled = true;
+      tempCtx.imageSmoothingQuality = "high";
+      tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
       const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = "crypto-payment-qr.png";
+      link.href = tempCanvas.toDataURL("image/png");
+      link.download = `${document.getElementById("currencySelect").value}-payment-qr.png`;
       link.click();
     }
+
     let timeLeft = 15 * 60;
     const countdownEl = document.getElementById("countdown");
-    const intervalId = setInterval(() => {
+    function updateTimer() {
       if (timeLeft <= 0) {
-        clearInterval(intervalId);
         countdownEl.innerText = "Expired";
-        countdownEl.style.backgroundColor = "rgba(233, 69, 96, 0.2)";
-        countdownEl.style.borderColor = "var(--error)";
-        countdownEl.style.color = "var(--error)";
+        countdownEl.classList.add("expired");
         return;
       }
-      timeLeft--;
       const min = String(Math.floor(timeLeft / 60)).padStart(2, "0");
       const sec = String(timeLeft % 60).padStart(2, "0");
       countdownEl.innerText = `${min}:${sec}`;
       if (timeLeft < 60) {
-          countdownEl.style.animation = 'pulse 1s infinite';
+        countdownEl.classList.add("expired");
+        if (timeLeft === 59) {
+          alert("Attention: Only one minute left to complete the payment!");
+        }
       }
-    }, 1000);
+      timeLeft--;
+    }
+    setInterval(updateTimer, 1000);
+
     window.onload = () => {
-      selectCurrency('USDT');
+      selectCurrency('TRX');
     };
   </script>
 </body>
