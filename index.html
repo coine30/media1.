@@ -1,671 +1,694 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crypto Payment Gateway</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <title>Premium Media Files</title>
+  <meta name="description" content="Get premium media files in ZIP format with secure payment, instant delivery and special offers. Multiple sizes and editing packs available.">
+  <meta property="og:title" content="Premium Media Files - Instant Download & Secure Payment">
+  <meta property="og:description" content="Access high-quality videos, audio files, templates and editing packs. Secure, fast and reliable.">
+  <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/3767/3767084.png">
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3767/3767084.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <style>
     :root {
-      --bg-gradient-start: #0f0c29;
-      --bg-gradient-mid: #302b63;
-      --bg-gradient-end: #24243e;
-      --card-bg: rgba(255,255,255,0.09);
-      --primary-accent: #4a90e2;
-      --secondary-accent: #f5a623;
-      --text-light: #f0f0f0;
-      --white: #fff;
-      --error: #e94560;
-      --success: #18c683;
-      --shadow: 0 15px 50px rgba(0,0,0,0.30);
-      --glass: blur(15px) saturate(160%) brightness(1.02);
-      --glow: 0 0 18px var(--primary-accent), 0 0 4px var(--secondary-accent);
-      --frost: rgba(255,255,255,0.19);
+      --primary-color: #0a1128;
+      --secondary-color: #1a2a4a;
+      --accent-color: #ffd700;
+      --text-color: #f8f8f8;
+      --light-bg: #1a2a4a;
+      --dark-bg: #0a1128;
+      --highlight: #ffea00;
+      --card-gradient: linear-gradient(135deg, #1a2a4a 0%, #2a3a5a 100%);
+      --modal-gradient: linear-gradient(135deg, #0a1128 0%, #1a2a4a 100%);
+      --footer-gradient: linear-gradient(90deg, #1a2a4a 0%, #2a3a5a 100%);
+      --button-gradient: linear-gradient(90deg, #1a2a4a 0%, #ffd700 100%);
+      --glow-effect: 0 0 15px rgba(255, 215, 0, 0.4);
     }
     body {
-      background: linear-gradient(50deg, var(--bg-gradient-start), var(--bg-gradient-mid) 85%, var(--bg-gradient-end));
-      font-family: 'Poppins', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       margin: 0;
-      color: var(--text-light);
-      direction: ltr;
-      overflow-x: hidden;
-    }
-    .card {
-      background: var(--card-bg);
-      padding: 38px 32px 30px;
-      border-radius: 28px;
-      box-shadow: var(--shadow);
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-color);
       text-align: center;
-      width: 97%;
-      max-width: 430px;
-      border: 1.6px solid rgba(255,255,255,0.17);
-      backdrop-filter: var(--glass);
-      animation: fadeIn 0.8s;
-      position: relative;
-      z-index: 1;
+      padding: 0 10px;
+      min-height: 100vh;
+      line-height: 1.6;
+      font-weight: 400;
+      font-size: 16px;
     }
-    /* animated floating accent */
-    .animated-bg {
+    .header {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+      box-shadow: var(--glow-effect);
+      line-height: 1.4;
+      border: 1px solid var(--accent-color);
+      position: relative;
+      overflow: hidden;
+    }
+    .header::after {
+      content: '';
       position: absolute;
-      z-index: 0;
-      left: 50%; top: 50%;
-      width: 480px; height: 480px;
-      pointer-events: none;
-      transform: translate(-50%,-60%);
-      opacity: 0.14;
-      filter: blur(60px);
-      background: radial-gradient(circle, #4a90e2 0%, #f5a623 55%, #24243e 100%);
-      animation: floatGlow 8s infinite alternate;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        transparent 0%,
+        rgba(255, 215, 0, 0.1) 50%,
+        transparent 100%
+      );
+      animation: shine 6s infinite;
+      transform: rotate(30deg);
     }
-    @keyframes floatGlow {
-      0% { transform: translate(-50%, -60%) scale(0.98);}
-      100% { transform: translate(-48%, -62%) scale(1.05);}
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-    #payTitle {
-      font-size: 2.05em;
-      font-weight: 700;
-      margin-bottom: 18px;
-      color: var(--white);
-      letter-spacing: 1.3px;
-      text-shadow: 0 1px 10px rgba(0,0,0,0.18), 0 2px 8px #4a90e2a1;
-    }
-    .crypto-icons {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 16px 10px;
-      margin-bottom: 18px;
-      margin-top: 2px;
-    }
-    .crypto-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: var(--frost);
-      border: 2.5px solid transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.22s;
-      position: relative;
-      box-shadow: 0 2px 14px #4a90e229;
-    }
-    .crypto-icon.selected {
-      border-color: var(--primary-accent);
-      transform: scale(1.13) translateY(-2px);
-      box-shadow: 0 0 13px #4a90e2, 0 2px 22px #f5a62344;
-      z-index: 2;
-    }
-    .crypto-icon img { width: 29px; height: 29px; }
-    .network-label {
-      font-size: 1.05em;
-      color: var(--primary-accent);
-      margin-bottom: 7px;
-      text-align: left;
-      font-weight: bold;
-      letter-spacing: .2px;
-    }
-    #networkWrap { margin-bottom: 19px;}
-    #networkSelect, .single-network {
-      background: rgba(0,0,0,0.16);
-      color: var(--text-light);
-      padding: 9px 15px;
-      border-radius: 9px;
-      border: 1px solid rgba(255,255,255,0.13);
-      font-size: 1em;
-      width: 100%;
-      cursor: pointer;
-      margin-bottom: 2px;
-      text-align: left;
-    }
-    .single-network {
-      border: none;
-      background: none;
-      color: var(--secondary-accent);
-      font-weight: bold;
-    }
-    .qr-container {
-      margin: 20px auto 12px;
-      background: var(--white);
-      padding: 12px;
-      border-radius: 22px;
-      width: fit-content;
-      box-shadow: 0 5px 14px rgba(0,0,0,0.11);
-      position: relative;
-      border: 1.7px solid #e9e9e9;
-      min-height: 195px;
-    }
-    #qrcode {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-      background: white;
-      padding: 8px;
-      border-radius: 12px;
-    }
-    .qr-info {
-      margin-top: 7px;
-      font-size: 0.97em;
-      color: #4a90e2;
-      font-weight: bold;
-      letter-spacing: .9px;
-      text-shadow: 0 1px 8px #4a90e235;
-    }
-    .address-box {
-      margin-top: 13px;
-    }
-    .address-label {
-      font-size: 1.01em;
-      color: var(--text-light);
-      margin-bottom: 8px;
-      opacity: 0.9;
+    .countdown {
+      margin-top: 15px;
+      font-size: 16px;
       font-weight: 500;
-      text-align: left;
-    }
-    .address {
-      background: rgba(0,0,0,0.21);
-      color: var(--white);
-      padding: 11px 7px;
-      border-radius: 11px;
-      margin-bottom: 14px;
-      font-size: 1.09em;
-      word-break: break-all;
-      border: 1.5px solid var(--primary-accent);
-      transition: border-color 0.3s;
-      text-align: left;
-      letter-spacing: 1px;
-      font-family: 'Poppins', monospace;
-      font-weight: 600;
-      box-shadow: 0 1px 8px #4a90e211;
-      user-select: all;
-    }
-    .payment-info {
-      background: rgba(0,0,0,0.16);
-      padding: 13px 7px 8px 7px;
-      border-radius: 12px;
-      margin-top: 13px;
-      font-size: 1.07em;
-      box-shadow: 0 1px 6px #4a90e211;
-    }
-    .usd-amount {
-      color: var(--white);
-      font-size: 1.11em;
-      font-weight: 600;
-      margin-bottom: 5px;
-      letter-spacing: .3px;
-    }
-    .live-rate {
-      color: var(--primary-accent);
-      font-size: 0.93em;
-      margin-bottom: 4px;
-      font-weight: bold;
-      letter-spacing: .5px;
-      text-shadow: 0 1px 4px #4a90e233;
-    }
-    .amount {
-      margin-top: 5px;
-      font-weight: 700;
-      font-size: 1.23em;
-      color: var(--secondary-accent);
-      letter-spacing: .4px;
-      text-shadow: 0 1px 8px #f5a62318;
-    }
-    .timer {
-      margin-top: 17px;
-      padding: 12px 0;
-      border-radius: 13px;
-      background: rgba(74, 144, 226, 0.18);
-      color: var(--primary-accent);
-      font-weight: 700;
-      font-size: 1.17em;
-      width: 100%;
-      max-width: 215px;
+      color: var(--highlight);
+      background: var(--light-bg);
+      padding: 8px 15px;
+      border-radius: 6px;
+      border: 1px solid var(--accent-color);
+      width: fit-content;
       margin-left: auto;
       margin-right: auto;
-      border: 1.1px solid var(--primary-accent);
-      transition: all 0.3s;
-      letter-spacing: 2px;
-      box-shadow: 0 1px 8px #4a90e222;
-      text-shadow: 0 1px 8px #4a90e255;
+      box-shadow: var(--glow-effect);
     }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(233,69,96,0.5);}
-      70% { box-shadow: 0 0 0 10px rgba(233,69,96,0);}
-      100% {box-shadow: 0 0 0 0 rgba(233,69,96,0);}
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+      padding-bottom: 30px;
     }
-    .timer.expired {
-      background: rgba(233,69,96,0.17);
-      border-color: var(--error);
-      color: var(--error);
-      animation: pulse 1s infinite;
-      text-shadow: 0 1px 12px #e94560cc;
-    }
-    .button-group {
-      display: flex;
-      gap: 11px;
-      margin-top: 7px;
-      flex-direction: row;
-    }
-    button {
-      flex: 1;
-      padding: 12px 0;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 1.01em;
-      border: none;
-      background: var(--primary-accent);
-      color: var(--white);
+    .product-card {
+      background: var(--card-gradient);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
       cursor: pointer;
-      transition: all 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 1px 7px #4a90e215;
+      transition: all 0.3s ease;
+      border: 1px solid var(--accent-color);
+      position: relative;
+      overflow: hidden;
     }
-    button.secondary {
-      background: rgba(255,255,255,0.21);
-      color: var(--primary-accent);
-      border: 1px solid var(--primary-accent);
-      box-shadow: none;
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--glow-effect);
+      border-color: var(--highlight);
     }
-    button:hover, button.secondary:hover {
-      background: #5fa4ff;
-      color: #fff;
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(74,144,226,0.17);
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--highlight);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
     }
-    .copy-feedback {
-      visibility: hidden;
-      background-color: var(--success);
-      color: #111;
-      text-align: center;
-      border-radius: 8px;
-      padding: 10px 23px;
-      position: fixed;
-      z-index: 99;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 33px;
-      font-size: 1.07em;
-      opacity: 0;
-      transition: all 0.35s;
-      box-shadow: 0 2px 12px #18c68355;
+    .product-card:hover::before {
+      transform: scaleX(1);
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--highlight);
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+    }
+    .product-offre {
+      font-size: 14px;
+      color: var(--dark-bg);
+      background: var(--accent-color);
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin: 10px auto;
       font-weight: 600;
+      display: inline-block;
+      box-shadow: var(--glow-effect);
     }
-    .copy-feedback.show {
-      visibility: visible;
-      opacity: 1;
+    .zip-icon {
+      width: 60px;
+      margin: 10px 0;
+      transition: transform 0.3s;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      background: var(--secondary-color);
+      border-radius: 12px;
+      padding: 5px;
     }
-    .copy-feedback svg {
-      width: 20px; height: 20px;
-      color: var(--success);
-      margin-right: 2px;
-    }
-    .warning-note {
-      background: rgba(233, 69, 96, 0.14);
-      border-left: 4px solid var(--error);
-      padding: 8px 11px;
-      margin: 13px 0 7px;
-      border-radius: 0 7px 7px 0;
-      text-align: left;
-      font-size: 0.97em;
-      color: var(--error);
+    .file-type {
       font-weight: 500;
-      letter-spacing: .3px;
-      box-shadow: 0 1px 8px #e9456015;
+      font-size: 0.9rem;
+      color: var(--accent-color);
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    /* floating check animation */
-    .floating-check {
-      position: absolute;
-      top: 10px; right: 16px;
-      z-index: 3;
-      background: #18c683;
-      color: #fff;
-      border-radius: 50%;
-      padding: 8px 8px 6px 8px;
-      box-shadow: 0 1px 7px #18c68377;
-      animation: popFade 1.2s;
+    .card-footer {
+      margin-top: 15px;
+      color: var(--accent-color);
+      font-size: 14px;
+      font-weight: 400;
+    }
+    .modal {
       display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 17, 40, 0.95);
+      overflow-y: auto;
+      padding: 20px 0;
     }
-    @keyframes popFade {
-      0% { opacity: 0; transform: scale(0.2);}
-      40% { opacity: 1; transform: scale(1.2);}
-      80% { opacity: 1; }
-      100% { opacity: 0; transform: scale(0.79);}
+    .modal-content {
+      background: var(--modal-gradient);
+      margin: 30px auto;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 90%;
+      width: 400px;
+      box-shadow: var(--glow-effect);
+      border: 1px solid var(--accent-color);
+      color: #fff;
+      position: relative;
     }
-    /* Responsive */
-    @media (max-width: 560px) {
-      .card {padding: 15px 2vw;}
-      #payTitle {font-size: 1.13em;}
-      .crypto-icons {gap: 7px;}
-      .qr-container {padding: 6px;}
-      .address {font-size: .98em;}
-      .qr-container {min-height: 111px;}
-      .animated-bg {width: 260px; height: 260px;}
-      .payment-info {font-size: 0.97em;}
-      .timer {font-size: 1em;}
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 24px;
+      color: var(--accent-color);
+      cursor: pointer;
+      background: rgba(0,0,0,0.3);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    .close:hover {
+      background: var(--accent-color);
+      color: var(--dark-bg);
+      transform: rotate(90deg);
+    }
+    .badge {
+      background: var(--accent-color);
+      color: var(--dark-bg);
+      font-size: 13px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      font-weight: 600;
+      box-shadow: var(--glow-effect);
+    }
+    .price-box {
+      background: var(--light-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+      border: 1px solid var(--accent-color);
+      position: relative;
+    }
+    .price-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 10px;
+      border: 1px solid var(--highlight);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .price-box:hover::before {
+      opacity: 0.3;
+    }
+    .price-box div {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+    .secure-note {
+      background: var(--accent-color);
+      color: var(--dark-bg);
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 600;
+      box-shadow: var(--glow-effect);
+    }
+    .pay-button {
+      background: var(--button-gradient);
+      color: var(--dark-bg);
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 15px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--glow-effect);
+    }
+    .pay-button:hover {
+      background: linear-gradient(to right, var(--accent-color) 10%, var(--highlight) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+    }
+    .pay-button::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 100%
+      );
+      transform: rotate(30deg);
+      transition: transform 0.6s;
+    }
+    .pay-button:hover::after {
+      transform: translateX(100%) rotate(30deg);
+    }
+    .trust-box {
+      background: var(--light-bg);
+      border-radius: 10px;
+      padding: 12px;
+      margin: 15px 0;
+      font-size: 13px;
+      text-align: center;
+      border: 1px solid var(--accent-color);
+    }
+    .trust-box div {
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .logo-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .logo-bar img {
+      width: 30px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+      background: var(--light-bg);
+      border-radius: 5px;
+      padding: 3px;
+      transition: all 0.2s;
+    }
+    .logo-bar img:hover {
+      transform: translateY(-2px);
+      filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.3));
+    }
+    @media (max-width: 768px) {
+      body {
+        font-size: 15px;
+      }
+      .header {
+        font-size: 1.4rem;
+        padding: 15px;
+      }
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      .modal-content {
+        width: 90%;
+        padding: 15px;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .testimonial {
+      background: var(--light-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: left;
+      border-left: 4px solid var(--accent-color);
+      color: #fff;
+      font-size: 15px;
+      box-shadow: var(--glow-effect);
+    }
+    .testimonial strong {
+      color: var(--highlight);
+      font-weight: 600;
+      display: block;
+      margin-top: 8px;
+    }
+    details {
+      margin: 10px 0;
+      background: var(--light-bg);
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid var(--accent-color);
+      text-align: left;
+      font-size: 15px;
+      box-shadow: var(--glow-effect);
+    }
+    summary {
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--highlight);
+      transition: color 0.2s;
+    }
+    summary:hover {
+      color: #fff;
+    }
+    details p {
+      padding: 8px;
+      margin: 8px 0 0 0;
+      font-size: 14px;
+    }
+    .contact-box {
+      margin: 30px 0;
+      text-align: center;
+    }
+    .telegram-icon {
+      width: 40px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+      background: var(--light-bg);
+      border-radius: 8px;
+      padding: 5px;
+      transition: all 0.2s;
+    }
+    .telegram-icon:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+    }
+    .contact-box a {
+      color: var(--highlight);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .contact-box a:hover {
+      color: #fff;
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+    }
+    .footer {
+      margin: 30px 0;
+      font-size: 13px;
+      background: var(--footer-gradient);
+      padding: 15px 0;
+      border-radius: 8px;
+      box-shadow: var(--glow-effect);
+    }
+    .footer a {
+      color: var(--accent-color);
+      font-weight: 500;
+      text-decoration: none;
+      margin: 0 10px;
+      transition: all 0.2s;
+    }
+    .footer a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--light-bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-color);
+      border-radius: 4px;
+    }
+    /* Mysterious floating animation */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    .floating {
+      animation: float 4s ease-in-out infinite;
+    }
+    /* Pulse animation for important elements */
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+    }
+    .pulse {
+      animation: pulse 2s infinite;
     }
   </style>
 </head>
 <body>
-  <div class="animated-bg"></div>
-  <div class="card">
-    <div class="floating-check" id="floatingCheck">
-      <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#18c683"/><path stroke="#fff" stroke-width="2" d="M7 13l3 3 7-7"/></svg>
+<!-- Header -->
+<div class="header" data-aos="fade-down">
+  🗂️ Premium Files Await You... <span style="color:#ffea00;">Are You Ready?</span>
+</div>
+<div class="countdown" data-aos="fade-up">
+  ⏳ Offer Ends In: <span class="timer">--:--:--</span>
+</div>
+
+<!-- Products Grid -->
+<div class="products-grid">
+  <!-- Product 1 -->
+  <div class="product-card floating" onclick="openProductModal('modal1')" data-aos="fade-up">
+    <div class="card-title">
+      <img src="https://img.icons8.com/color/48/zip--v1.png" width="24" alt="ZIP">
+      2GB Pack
     </div>
-    <h2 id="payTitle">Deposit TRX</h2>
-    <div class="crypto-icons" aria-label="Select Currency">
-      <div class="crypto-icon" id="iconUSDT" onclick="selectCurrency('USDT')" title="Tether USDT">
-        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/825.png" alt="USDT"/>
-      </div>
-      <div class="crypto-icon" id="iconBTC" onclick="selectCurrency('BTC')" title="Bitcoin BTC">
-        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1.png" alt="BTC"/>
-      </div>
-      <div class="crypto-icon" id="iconETH" onclick="selectCurrency('ETH')" title="Ethereum ETH">
-        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png" alt="ETH"/>
-      </div>
-      <div class="crypto-icon" id="iconUSDC" onclick="selectCurrency('USDC')" title="USD Coin USDC">
-        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png" alt="USDC"/>
-      </div>
-      <div class="crypto-icon" id="iconSOL" onclick="selectCurrency('SOL')" title="Solana SOL">
-        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/5426.png" alt="SOL"/>
-      </div>
-      <div class="crypto-icon selected" id="iconTRX" onclick="selectCurrency('TRX')" title="Tron TRX">
-        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png" alt="TRX"/>
-      </div>
+    <div class="product-offre">Today's Offer: <span>30% Off</span></div>
+    <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png" class="zip-icon" alt="ZIP">
+    <div class="file-type">
+      <img src="https://img.icons8.com/color/48/video-file.png" width="24" alt="Video">
+      ZIP File (2GB)
     </div>
-    <select id="currencySelect" onchange="updateCurrency()" style="display:none;">
-      <option value="USDT">Tether (USDT)</option>
-      <option value="BTC">Bitcoin (BTC)</option>
-      <option value="ETH">Ethereum (ETH)</option>
-      <option value="USDC">USD Coin (USDC)</option>
-      <option value="SOL">Solana (SOL)</option>
-      <option value="TRX">Tron (TRX)</option>
-    </select>
-    <div id="networkWrap"></div>
-    <div class="qr-container">
-      <div id="qrcode"></div>
-      <div class="qr-info" id="qrInfo"></div>
-    </div>
-    <div class="address-box">
-      <div class="address-label">Payment Address</div>
-      <div class="address" id="walletAddress" title="Copy Address">TFmXMURG1dP59mk8hooz5ohJyBgYkbDze</div>
-    </div>
-    <div class="button-group">
-      <button onclick="copyAddress()">Copy Address</button>
-      <button onclick="downloadQR()" class="secondary">Download QR</button>
-    </div>
-    <div class="payment-info">
-      <div class="usd-amount">Minimum deposit: <span id="usdAmount">30.00</span> <span id="currencyLabel">TRX</span></div>
-      <div class="live-rate" id="liveRate"></div>
-      <div class="amount" id="amountLabel"></div>
-    </div>
-    <div class="warning-note" id="warningNote">
-      This address supports TRX deposits on Tron network only. Any other asset will be lost!
-    </div>
-    <div class="timer" id="countdown">15:00</div>
+    <div class="card-footer">Click for details</div>
   </div>
-  <div id="copyFeedback" class="copy-feedback">
-    <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#18c683"/><path stroke="#fff" stroke-width="2" d="M7 13l3 3 7-7"/></svg>
-    Address copied!
+</div>
+
+<!-- Modal 1 -->
+<div id="modal1" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeProductModal('modal1')">&times;</span>
+    <div class="badge">🔥 30% Off</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/3767/3767084.png" class="zip-icon floating" alt="ZIP">
+    <div class="file-type">
+      <img src="https://img.icons8.com/color/48/video-file.png" width="24" alt="Video">
+      ZIP File (2GB)
+    </div>
+    <p>This package contains high-quality media files ready to use.</p>
+    <p><strong>Content Details:</strong> 1 ready-to-use file containing 150+ high-quality video clips</p>
+    <p><strong>File Format:</strong> ZIP (compressed for fast download)</p>
+    <div class="price-box">
+      <div>Original Price: <strong style="text-decoration:line-through; color:#a3a3a3;">$45.99</strong></div>
+      <div>Discounted Price: <strong style="color:var(--highlight);">$33.33</strong></div>
+      <div class="secure-note">🔒 Secure Payment & Encrypted Delivery</div>
+    </div>
+    <button class="pay-button pulse" onclick="handlePurchase(this, 'https://buy.stripe.com/28EcMY1se7hYc4Q54RfnO06')">
+      🔓 Unlock for $33.33
+    </button>
+    <div class="trust-box">
+      <div>✅ 7-Day Money Back Guarantee</div>
+      <div>🔐 Secure Payment Process</div>
+      <div>📦 Instant Download After Payment</div>
+    </div>
+    <div class="logo-bar">
+      <img src="https://img.icons8.com/color/48/visa.png" alt="Visa">
+      <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard">
+      <img src="https://img.icons8.com/color/48/apple-pay.png" alt="Apple Pay">
+    </div>
   </div>
-  <script>
-    // Currencies/networks data
-    const USD_AMOUNT = 30.00;
-    const rates = { 
-      USDT: 1, 
-      BTC: 65000, 
-      ETH: 3500,
-      USDC: 1,
-      SOL: 150,
-      TRX: 0.12
-    };
-    const wallets = {
-      USDT: {
-        TRC20: { 
-            address: "TFmXMUtRG1dP59mK8hooz5ohJyBgYkbDze", 
-            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png"
-        },
-        ERC20: { 
-            address: "0xD76974951e1F2AEAd047C4843038e38e807E757E", 
-            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png"
-        }
-      },
-      BTC: { 
-        address: "1CBxmEaz3ofcy8XtTFDZiWC7ybgKw5QZX6",
-        logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1.png" 
-      },
-      ETH: { 
-        address: "0xD76974951e1F2AEAd047C4843038e38e807E757E",
-        logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png" 
-      },
-      USDC: {
-        Solana: {
-            address: "DGLmijgibTZDA4Vpqv6CNYn7UFPiUfkn92GRnnBZsjMD",
-            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
-        }
-      },
-      SOL: {
-        Solana: {
-            address: "DGLmijgibTZDA4Vpqv6CNYn7UFPiUfkn92GRnnBZsjMD",
-            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/5426.png"
-        }
-      },
-      TRX: {
-        Tron: {
-            address: "TFmXMURG1dP59mk8hooz5ohJyBgYkbDze",
-            logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png"
-        }
-      }
-    };
+</div>
 
-    const qrcodeContainer = document.getElementById("qrcode");
-    const qrInfo = document.getElementById("qrInfo");
-    let qrCodeInstance = null;
+<!-- Testimonials -->
+<div style="margin: 40px auto; max-width: 540px;" data-aos="fade-up">
+  <h3 style="color: var(--accent-color); font-weight: 600; text-align: center;">💬 Customer Reviews:</h3>
+  <div class="testimonial">
+    "Excellent files, received them immediately after payment. The quality exceeded my expectations and the download was very fast. Highly recommended!"
+    <strong>- John from New York</strong>
+  </div>
+  <div class="testimonial">
+    "Great support and rich content for the price. I've bought several packs and they were all worth every penny. Will definitely buy again!"
+    <strong>- David from London</strong>
+  </div>
+</div>
 
-    function selectCurrency(cur) {
-      document.getElementById('currencySelect').value = cur;
-      updateCurrency();
-      ['USDT','BTC','ETH','USDC','SOL','TRX'].forEach(c => {
-        document.getElementById('icon'+c).classList.toggle('selected', c === cur);
-      });
-    }
+<!-- FAQ -->
+<div style="margin: 40px auto; max-width: 540px; text-align: left;" data-aos="fade-up">
+  <h3 style="color: var(--accent-color); font-weight: 600;">❓ Frequently Asked Questions:</h3>
+  <details>
+    <summary><b>How do I get the files after purchase?</b></summary>
+    <p>After successful payment, you'll be automatically redirected to the download page. Additionally, a download link will be sent to the email address associated with your payment method. The link will be valid for 7 days with unlimited downloads during that period.</p>
+  </details>
+  <details>
+    <summary><b>Is the payment process secure?</b></summary>
+    <p>Yes, all payments are processed through Stripe using 256-bit SSL encryption and PCI security standards. We don't store full payment details on our servers. Stripe is a globally trusted payment processor used by millions of businesses worldwide.</p>
+  </details>
+  <details>
+    <summary><b>Can I get a refund?</b></summary>
+    <p>Absolutely! We offer a 7-day money back guarantee with no questions asked if you're not satisfied with your purchase. Just contact our support team within 7 days of purchase with your order details, and we'll process your refund immediately.</p>
+  </details>
+  <details>
+    <summary><b>Do you offer technical support?</b></summary>
+    <p>Yes! We provide comprehensive technical support for all our products. You can contact us anytime via Telegram or email, and our support team typically responds within 1-2 business hours. We're happy to help with any inquiries or issues you may have.</p>
+  </details>
+</div>
 
-    // Show network smartly (dropdown or just text)
-    function updateCurrency() {
-      const selected = document.getElementById("currencySelect").value;
-      const netWrap = document.getElementById("networkWrap");
-      let networks = [];
-      if (selected === "USDT") networks = ["TRC20", "ERC20"];
-      else if (selected === "USDC" || selected === "SOL") networks = ["Solana"];
-      else if (selected === "TRX") networks = ["Tron"];
-      else networks = [];
-      if (networks.length > 1) {
-        netWrap.innerHTML = `<div class="network-label">Select Network:</div>
-          <select id="networkSelect" onchange="updatePaymentDetails()"></select>`;
-        const networkSelect = document.getElementById("networkSelect");
-        networks.forEach(n => addOption(networkSelect, n, n + " Network"));
-      } else if (networks.length === 1) {
-        netWrap.innerHTML = `<div class="network-label">Network:</div>
-          <div class="single-network" id="networkSelect" data-value="${networks[0]}">${networks[0]} Network</div>`;
-      } else {
-        netWrap.innerHTML = '';
-      }
-      updatePaymentDetails();
-    }
+<!-- Contact -->
+<div class="contact-box" data-aos="fade-up">
+  </a>
+  <p>Technical Support: <a href="mailto:support@admraw.com">support@admraw.com</a></p>
+  <p>Response Time: Usually within 1-2 business hours</p>
+</div>
 
-    function addOption(selectElement, value, text) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = text;
-      selectElement.appendChild(option);
-    }
+<!-- Footer -->
+<div class="footer" data-aos="fade-up">
+  <p>©️ 2025 Media Archive. All Rights Reserved.</p>
+  <p>
+    <a href="privacy.html">Privacy Policy</a> • 
+    <a href="refund.html">Refund Policy</a> •
+    <a href="terms.html">Terms of Service</a>
+  </p>
+</div>
 
-    function getSelectedNetwork() {
-      const selected = document.getElementById("currencySelect").value;
-      if (selected === "USDT" || selected === "USDC" || selected === "SOL" || selected === "TRX") {
-        const sel = document.getElementById("networkSelect");
-        if (sel && sel.tagName === "SELECT") return sel.value;
-        if (sel && sel.dataset && sel.dataset.value) return sel.dataset.value;
-      }
-      return "Tron";
-    }
-
-    function updatePaymentDetails() {
-      const selected = document.getElementById("currencySelect").value;
-      const network = getSelectedNetwork();
-      let data, amountStr, liveRate;
-      let addr = "";
-      let logo = "";
-      let warnText = "";
-      let liveColor = "#4a90e2";
-      if (selected === "USDT") {
-        data = wallets[selected][network];
-        amountStr = (USD_AMOUNT / rates.USDT).toFixed(2);
-        liveRate = `1 USDT = $${rates.USDT.toFixed(2)} (${network})`;
-        addr = data.address;
-        logo = data.logo;
-        warnText = `This address accepts USDT (${network}) only!`;
-      } else if (selected === "BTC") {
-        data = wallets[selected];
-        amountStr = (USD_AMOUNT / rates.BTC).toFixed(6);
-        liveRate = `1 BTC = $${rates.BTC.toLocaleString()}`;
-        addr = data.address;
-        logo = data.logo;
-        warnText = "This address accepts Bitcoin (BTC) only.";
-        liveColor = "#f7931a";
-      } else if (selected === "ETH") {
-        data = wallets[selected];
-        amountStr = (USD_AMOUNT / rates.ETH).toFixed(5);
-        liveRate = `1 ETH = $${rates.ETH.toLocaleString()}`;
-        addr = data.address;
-        logo = data.logo;
-        warnText = "This address accepts ETH (ERC20) only.";
-        liveColor = "#627eea";
-      } else if (selected === "USDC") {
-        data = wallets[selected][network];
-        amountStr = (USD_AMOUNT / rates.USDC).toFixed(2);
-        liveRate = `1 USDC = $${rates.USDC.toFixed(2)} (${network})`;
-        addr = data.address;
-        logo = data.logo;
-        warnText = "This address accepts USDC (Solana) only!";
-        liveColor = "#2775ca";
-      } else if (selected === "SOL") {
-        data = wallets[selected][network];
-        amountStr = (USD_AMOUNT / rates.SOL).toFixed(4);
-        liveRate = `1 SOL = $${rates.SOL}`;
-        addr = data.address;
-        logo = data.logo;
-        warnText = "This address accepts SOL (Solana) only!";
-        liveColor = "#00ffa3";
-      } else if (selected === "TRX") {
-        data = wallets[selected][network];
-        amountStr = (USD_AMOUNT / rates.TRX).toFixed(2);
-        liveRate = `1 TRX = $${rates.TRX}`;
-        addr = data.address;
-        logo = data.logo;
-        warnText = "This address supports TRX deposits on Tron network only. Any other asset will be lost!";
-        liveColor = "#ec0928";
-      }
-      // QR is address only — most compatible with wallet apps
-      qrcodeContainer.innerHTML = "";
-      qrCodeInstance = new QRCode(qrcodeContainer, { 
-          text: addr, 
-          width: 180, 
-          height: 180, 
-          colorDark : "#000000",
-          colorLight : "#ffffff",
-          correctLevel : QRCode.CorrectLevel.H
-      });
-      qrInfo.textContent = `${selected}${network ? " • " + network : ""}`;
-      qrInfo.style.color = liveColor;
-      document.getElementById("walletAddress").innerText = addr;
-      document.getElementById("amountLabel").innerText = `Pay exactly: ${amountStr} ${selected}`;
-      document.getElementById("payTitle").innerText = `Pay with ${selected}${network ? " (" + network + ")" : ""}`;
-      document.getElementById("usdAmount").innerText = USD_AMOUNT;
-      document.getElementById("currencyLabel").innerText = selected;
-      document.getElementById("liveRate").innerText = liveRate;
-      document.getElementById("liveRate").style.color = liveColor;
-      document.getElementById("warningNote").textContent = warnText;
-    }
-
-    function copyAddress() {
-      const selected = document.getElementById("currencySelect").value;
-      const network = getSelectedNetwork();
-      let addr = "";
-      if (selected === "USDT" || selected === "USDC" || selected === "SOL" || selected === "TRX") {
-        addr = wallets[selected][network].address;
-      } else {
-        addr = wallets[selected].address;
-      }
-      navigator.clipboard.writeText(addr).then(() => {
-        const feedback = document.getElementById("copyFeedback");
-        feedback.classList.add("show");
-        const floatC = document.getElementById("floatingCheck");
-        floatC.style.display = "block";
-        floatC.style.animation = "popFade 1.2s";
-        setTimeout(() => { 
-          feedback.classList.remove("show"); 
-          floatC.style.display = "none";
-        }, 1450);
-      });
-    }
-
-    function downloadQR() {
-      const canvas = qrcodeContainer.querySelector("canvas");
-      if (!canvas) return;
-      const tempCanvas = document.createElement("canvas");
-      const tempCtx = tempCanvas.getContext("2d");
-      const scale = 2.3;
-      tempCanvas.width = canvas.width * scale;
-      tempCanvas.height = canvas.height * scale;
-      tempCtx.imageSmoothingEnabled = true;
-      tempCtx.imageSmoothingQuality = "high";
-      tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-      const link = document.createElement("a");
-      link.href = tempCanvas.toDataURL("image/png");
-      link.download = `${document.getElementById("currencySelect").value}-payment-qr.png`;
-      link.click();
-    }
-
-    let timeLeft = 15 * 60;
-    const countdownEl = document.getElementById("countdown");
-    function updateTimer() {
-      if (timeLeft <= 0) {
-        countdownEl.innerText = "Expired";
-        countdownEl.classList.add("expired");
+<script>
+  function startCountdown() {
+    const targetTime = new Date();
+    targetTime.setHours(24, 0, 0, 0);
+    const timer = setInterval(() => {
+      const now = new Date();
+      const diff = targetTime - now;
+      if (diff <= 0) {
+        clearInterval(timer);
+        document.querySelector('.timer').textContent = "Offer Expired! 🚫";
         return;
       }
-      const min = String(Math.floor(timeLeft / 60)).padStart(2, "0");
-      const sec = String(timeLeft % 60).padStart(2, "0");
-      countdownEl.innerText = `${min}:${sec}`;
-      if (timeLeft < 60) {
-        countdownEl.classList.add("expired");
-        if (timeLeft === 59) {
-          setTimeout(()=>alert("Attention: Only one minute left to complete the payment!"), 100);
-        }
-      }
-      timeLeft--;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      document.querySelector('.timer').textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+  }
+  
+  function openProductModal(id) {
+    document.getElementById(id).style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    document.getElementById(id).scrollTo(0, 0);
+  }
+  
+  function closeProductModal(id) {
+    document.getElementById(id).style.display = 'none';
+    document.body.style.overflow = 'auto';
+    resetPayButtons();
+  }
+  
+  window.onclick = function(event) {
+    if (event.target.className === 'modal') {
+      event.target.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      resetPayButtons();
     }
-    setInterval(updateTimer, 1000);
-
-    window.onload = () => {
-      selectCurrency('TRX');
-    };
-  </script>
+  }
+  
+  function resetPayButtons() {
+    const buttons = document.querySelectorAll('.pay-button');
+    buttons.forEach(btn => {
+      btn.innerHTML = '🔓 Unlock for $33.33';
+      btn.disabled = false;
+    });
+  }
+  
+  function handlePurchase(btn, url) {
+    btn.innerHTML = '⬇ Processing...';
+    btn.disabled = true;
+    
+    const newWindow = window.open(url, '_blank');
+    if (newWindow) {
+      newWindow.focus();
+    }
+    
+    setTimeout(() => {
+      btn.innerHTML = '🔓 Unlock for $33.33';
+      btn.disabled = false;
+    }, 3000);
+  }
+  
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (modal.style.display === 'block') {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+          resetPayButtons();
+        }
+      });
+    }
+  });
+  
+  window.onload = function() {
+    startCountdown();
+    
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  };
+</script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 600,
+    once: true,
+    easing: 'ease-out',
+    offset: 50
+  });
+</script>
 </body>
 </html>
